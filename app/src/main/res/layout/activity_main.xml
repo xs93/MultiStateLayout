@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.github.xs93.statuslayout.MultiStatusLayout
+            android:id="@+id/status_layout"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:msl_content_layout="@layout/layout_content"
+            app:msl_default_state="Loading">
+
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Context" />
+        </com.github.xs93.statuslayout.MultiStatusLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Context" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="empty" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="error" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_other"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="other" />
+    </LinearLayout>
+</layout>

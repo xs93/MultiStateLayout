@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MultiStatusLayout">
+        <attr name="msl_content_layout" format="reference" />
+        <attr name="msl_loading_layout" format="reference" />
+        <attr name="msl_empty_layout" format="reference" />
+        <attr name="msl_error_layout" format="reference" />
+        <attr name="msl_default_state" format="enum">
+            <enum name="Content" value="0" />
+            <enum name="Loading" value="1" />
+            <enum name="Empty" value="2" />
+            <enum name="Error" value="3" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msl_loading">Loading…</string>
+    <string name="msl_empty">Empty Data</string>
+    <string name="msl_loading_error">Loading error, please try again later</string>
+    <string name="msl_error_retry">Click Retry</string>
+</resources>
