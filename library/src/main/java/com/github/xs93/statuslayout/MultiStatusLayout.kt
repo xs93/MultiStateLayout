@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
+import androidx.annotation.IdRes
 import androidx.core.util.containsKey
 
 /**
@@ -22,40 +23,37 @@ class MultiStatusLayout @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     companion object {
+
         const val STATE_CONTENT = 0
         const val STATE_LOADING = 1
         const val STATE_EMPTY = 2
         const val STATE_ERROR = 3
+        const val STATE_NO_NETWORK = 4
         const val INVALID_LAYOUT_ID = -1
     }
 
     interface OnViewStatusChangeListener {
-        fun onStatusChange(oldViewStatus: Int, oldView: View?, newViewStatus: Int, newView: View?)
-    }
 
-    /**
-     * View 创建监听,只在第一次View创建时被调用
-     * @constructor
-     */
-    interface OnViewCreatedListener {
-        fun onViewCreated(viewStatus: Int, view: View)
+        fun onStatusChange(oldViewStatus: Int, oldView: View?, newViewStatus: Int, newView: View?)
     }
 
     private var mContentLayoutId = INVALID_LAYOUT_ID
     private var mLoadingLayoutId = INVALID_LAYOUT_ID
     private var mEmptyLayoutId = INVALID_LAYOUT_ID
     private var mErrorLayoutId = INVALID_LAYOUT_ID
+    private var mNoNetworkLayoutId = INVALID_LAYOUT_ID
 
     private val mInflater: LayoutInflater
     private val mLayoutParams = LayoutParams(-1, -1)
 
-    private val mViews: SparseArray<View?> = SparseArray(4)
+    private val mViews: SparseArray<View?> = SparseArray(8)
     private var mShowStatus: Int = -1
     private var mDefaultStatus: Int = -1
 
     private var mRetryClickListener: OnClickListener? = null
     private var mViewStatusChangeListener: OnViewStatusChangeListener? = null
-    private var mViewCreatedListener: OnViewCreatedListener? = null
+
+    private val mChildViewClickListener = HashMap<Int, HashMap<Int, OnClickListener?>>()
 
     init {
         mInflater = LayoutInflater.from(context)
@@ -66,6 +64,8 @@ class MultiStatusLayout @JvmOverloads constructor(
             ta.getResourceId(R.styleable.MultiStatusLayout_msl_loading_layout, R.layout.msl_layout_loading)
         mEmptyLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_empty_layout, R.layout.msl_layout_empty)
         mErrorLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_error_layout, R.layout.msl_layout_error)
+        mNoNetworkLayoutId =
+            ta.getResourceId(R.styleable.MultiStatusLayout_msl_no_network_layout, R.layout.msl_layout_no_network)
         mDefaultStatus = ta.getInt(R.styleable.MultiStatusLayout_msl_default_state, STATE_CONTENT)
         ta.recycle()
     }
@@ -74,6 +74,16 @@ class MultiStatusLayout @JvmOverloads constructor(
         super.onFinishInflate()
         if (mContentLayoutId != INVALID_LAYOUT_ID) {
             removeAllViews()
+            var contentView = mViews[STATE_CONTENT]
+            if (contentView == null) {
+                if (mContentLayoutId != INVALID_LAYOUT_ID) {
+                    val inflateView = mInflater.inflate(mContentLayoutId, this, false).also {
+                        mViews[STATE_CONTENT] = it
+                    }
+                    contentView = inflateView
+                    addView(contentView, mLayoutParams)
+                }
+            }
         } else {
             if (childCount > 1) {
                 throw IllegalStateException("The number of child Views must be less than 1")
@@ -87,17 +97,6 @@ class MultiStatusLayout @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        var contentView = mViews[STATE_CONTENT]
-        if (contentView == null) {
-            if (mContentLayoutId != INVALID_LAYOUT_ID) {
-                val inflateView = mInflater.inflate(mContentLayoutId, this, false).also {
-                    mViews[STATE_CONTENT] = it
-                }
-                mViewCreatedListener?.onViewCreated(STATE_CONTENT, inflateView)
-                contentView = inflateView
-                addView(contentView, mLayoutParams)
-            }
-        }
         showViewByStatus(mDefaultStatus)
     }
 
@@ -115,12 +114,13 @@ class MultiStatusLayout @JvmOverloads constructor(
                 val inflateView = mInflater.inflate(mContentLayoutId, this, false).also {
                     mViews[STATE_CONTENT] = it
                 }
-                mViewCreatedListener?.onViewCreated(STATE_CONTENT, inflateView)
                 contentView = inflateView
                 addView(contentView, mLayoutParams)
             }
         }
         contentView?.visibility = VISIBLE
+
+        setupViewClick(STATE_CONTENT)
 
         mViewStatusChangeListener?.onStatusChange(
             oldViewStatus, mViews[oldViewStatus], STATE_CONTENT, mViews[STATE_CONTENT]
@@ -144,12 +144,14 @@ class MultiStatusLayout @JvmOverloads constructor(
             val inflateView = mInflater.inflate(mLoadingLayoutId, this, false).also {
                 mViews[STATE_LOADING] = it
             }
-            mViewCreatedListener?.onViewCreated(STATE_LOADING, inflateView)
             loadingView = inflateView
         }
         loadingView?.let {
             addView(it, mLayoutParams)
         }
+
+        setupViewClick(STATE_LOADING)
+
         mViewStatusChangeListener?.onStatusChange(
             oldViewStatus, mViews[oldViewStatus], STATE_LOADING, loadingView
         )
@@ -172,12 +174,14 @@ class MultiStatusLayout @JvmOverloads constructor(
             val inflateView = mInflater.inflate(mEmptyLayoutId, this, false).also {
                 mViews[STATE_EMPTY] = it
             }
-            mViewCreatedListener?.onViewCreated(STATE_EMPTY, inflateView)
             emptyView = inflateView
         }
         emptyView?.let {
             addView(it, mLayoutParams)
         }
+
+        setupViewClick(STATE_EMPTY)
+
         mViewStatusChangeListener?.onStatusChange(
             oldViewStatus, mViews[oldViewStatus], STATE_EMPTY, emptyView
         )
@@ -204,16 +208,54 @@ class MultiStatusLayout @JvmOverloads constructor(
                 val retryButton = inflateView.findViewById<Button>(R.id.msl_error_retry)
                 retryButton?.setOnClickListener(it)
             }
-            mViewCreatedListener?.onViewCreated(STATE_EMPTY, inflateView)
             errorView = inflateView
         }
         errorView?.let {
             addView(it, mLayoutParams)
         }
+
+        setupViewClick(STATE_ERROR)
+
         mViewStatusChangeListener?.onStatusChange(
             oldViewStatus, mViews[oldViewStatus], STATE_ERROR, errorView
         )
     }
+
+    fun showNoNetwork() {
+        if (mShowStatus == STATE_NO_NETWORK) {
+            return
+        }
+        val oldViewStatus = mShowStatus
+        removeOldViews()
+        mShowStatus = STATE_NO_NETWORK
+
+        if (mNoNetworkLayoutId == INVALID_LAYOUT_ID) {
+            mNoNetworkLayoutId = R.layout.msl_layout_no_network
+        }
+
+        var noNetworkView = mViews[STATE_NO_NETWORK]
+        if (noNetworkView == null) {
+            val inflateView = mInflater.inflate(mNoNetworkLayoutId, this, false).also {
+                mViews[STATE_NO_NETWORK] = it
+            }
+            mRetryClickListener?.let {
+                val retryButton = inflateView.findViewById<Button>(R.id.msl_error_retry)
+                retryButton?.setOnClickListener(it)
+            }
+            noNetworkView = inflateView
+        }
+
+        noNetworkView?.let {
+            addView(it, mLayoutParams)
+        }
+
+        setupViewClick(STATE_NO_NETWORK)
+
+        mViewStatusChangeListener?.onStatusChange(
+            oldViewStatus, mViews[oldViewStatus], STATE_NO_NETWORK, noNetworkView
+        )
+    }
+
 
     fun showViewByStatus(status: Int) {
         if (mShowStatus == status) {
@@ -233,6 +275,9 @@ class MultiStatusLayout @JvmOverloads constructor(
                     if (showView != null) {
                         addView(showView, mLayoutParams)
                     }
+
+                    setupViewClick(status)
+
                     mViewStatusChangeListener?.onStatusChange(
                         oldViewStatus, mViews[oldViewStatus], status, showView
                     )
@@ -254,14 +299,6 @@ class MultiStatusLayout @JvmOverloads constructor(
         mViewStatusChangeListener = listener
     }
 
-    fun setOnViewCreateListener(listener: OnViewCreatedListener?) {
-        mViewCreatedListener = listener
-        val curView = mViews[mShowStatus]
-        curView?.let {
-            mViewCreatedListener?.onViewCreated(mShowStatus, it)
-        }
-    }
-
     fun setViewByStatus(status: Int, view: View) {
         mViews.put(status, view)
         if (mShowStatus == status) {
@@ -272,6 +309,32 @@ class MultiStatusLayout @JvmOverloads constructor(
 
     fun getViewStatus(): Int {
         return mShowStatus
+    }
+
+
+    fun setViewClick(layoutStatus: Int, @IdRes viewId: Int, listener: OnClickListener?) {
+        var bindViewClicks = mChildViewClickListener[layoutStatus]
+        if (bindViewClicks == null) {
+            bindViewClicks = hashMapOf()
+            mChildViewClickListener[layoutStatus] = bindViewClicks
+        }
+        bindViewClicks[viewId] = listener
+        val view = mViews[layoutStatus]
+        if (view != null) {
+            view.findViewById<View?>(viewId)?.setOnClickListener(listener)
+        }
+    }
+
+
+    private fun setupViewClick(layoutStatus: Int) {
+        val view = mViews[layoutStatus] ?: return
+        val bindViewClicks = mChildViewClickListener[layoutStatus] ?: return
+        if (bindViewClicks.isEmpty()) {
+            return
+        }
+        bindViewClicks.forEach { (t, u) ->
+            view.findViewById<View?>(t)?.setOnClickListener(u)
+        }
     }
 
     private fun removeOldViews() {

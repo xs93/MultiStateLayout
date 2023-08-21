@@ -37,11 +37,20 @@ class MainActivity : AppCompatActivity() {
             binding.statusLayout.showError()
         }
 
+
+        binding.btnNoNetwork.setOnClickListener {
+            binding.statusLayout.showNoNetwork()
+        }
+
         binding.btnOther.setOnClickListener {
             binding.statusLayout.showViewByStatus(20)
         }
 
         binding.statusLayout.setRetryClickListener {
+            binding.statusLayout.showLoading()
+        }
+
+        binding.statusLayout.setViewClick(20, R.id.btn_test) {
             binding.statusLayout.showLoading()
         }
 
@@ -51,12 +60,6 @@ class MainActivity : AppCompatActivity() {
         binding.statusLayout.setOnViewStatusChangeListener(object : MultiStatusLayout.OnViewStatusChangeListener {
             override fun onStatusChange(oldViewStatus: Int, oldView: View?, newViewStatus: Int, newView: View?) {
                 Log.d("MultiStatusLayout onStatusChange", "${oldViewStatus},${oldView},${newViewStatus},${newView}")
-            }
-        })
-
-        binding.statusLayout.setOnViewCreateListener(object : MultiStatusLayout.OnViewCreatedListener {
-            override fun onViewCreated(viewStatus: Int, view: View) {
-                Log.d("MultiStatusLayout onViewCreated", "${viewStatus},${view}")
             }
         })
     }

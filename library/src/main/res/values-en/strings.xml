@@ -4,4 +4,5 @@
     <string name="msl_empty">Empty Data</string>
     <string name="msl_loading_error">Loading error, please try again later</string>
     <string name="msl_error_retry">Click Retry</string>
+    <string name="msl_no_network">No network please try again later</string>
 </resources>

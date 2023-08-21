@@ -5,11 +5,13 @@
         <attr name="msl_loading_layout" format="reference" />
         <attr name="msl_empty_layout" format="reference" />
         <attr name="msl_error_layout" format="reference" />
+        <attr name="msl_no_network_layout" format="reference" />
         <attr name="msl_default_state" format="enum">
             <enum name="Content" value="0" />
             <enum name="Loading" value="1" />
             <enum name="Empty" value="2" />
             <enum name="Error" value="3" />
+            <enum name="NoNetwork" value="4" />
         </attr>
     </declare-styleable>
 </resources>
