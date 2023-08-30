@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("maven-publish")
 }
 
 android {
@@ -22,12 +23,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
         moduleName = "com.github.xs93.statuslayout"
     }
 
@@ -40,4 +41,17 @@ dependencies {
     implementation(libs.androidx.core.kts)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            register("release", MavenPublication::class) {
+                from(components["release"])
+                groupId = "com.github.xs93"
+                artifactId = "MultiStateLayout"
+                version = "1.0.0"
+            }
+        }
+    }
 }
