@@ -68,6 +68,8 @@ coil = { group = "io.coil-kt", name = "coil", version = "2.4.0" }
 #UI库
 checkableView = { group = "com.github.xs93", name = "CheckableView", version = "1.0.2" }
 cropImageView = { group = "com.github.xs93", name = "CropImageView", version = "1.0.4" }
+multiStateLayout = { group = "com.github.xs93", name = "MultiStateLayout", version = "1.0.0" }
+
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version = "2.3.0" }
 #https://github.com/zhpanvip/BannerViewPager
 banner = { group = "com.github.zhpanvip", name = "bannerviewpager", version = "3.5.11" }
