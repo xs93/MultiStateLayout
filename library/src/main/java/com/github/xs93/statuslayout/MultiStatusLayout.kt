@@ -266,6 +266,7 @@ class MultiStatusLayout @JvmOverloads constructor(
             STATE_LOADING -> showLoading()
             STATE_EMPTY -> showEmpty()
             STATE_ERROR -> showError()
+            STATE_NO_NETWORK -> showNoNetwork()
             else -> {
                 if (mViews.containsKey(status)) {
                     val oldViewStatus = mShowStatus
