@@ -57,10 +57,24 @@ class MainActivity : AppCompatActivity() {
         val other = layoutInflater.inflate(R.layout.msl_other, null, false)
         binding.statusLayout.setViewByStatus(20, other)
 
-        binding.statusLayout.setOnViewStatusChangeListener(object : MultiStatusLayout.OnViewStatusChangeListener {
-            override fun onStatusChange(oldViewStatus: Int, oldView: View?, newViewStatus: Int, newView: View?) {
-                Log.d("MultiStatusLayout onStatusChange", "${oldViewStatus},${oldView},${newViewStatus},${newView}")
+        binding.statusLayout.setOnViewStatusChangeListener(object :
+            MultiStatusLayout.OnViewStatusChangeListener {
+            override fun onStatusChange(
+                oldViewStatus: Int,
+                oldView: View?,
+                newViewStatus: Int,
+                newView: View?
+            ) {
+                Log.d(
+                    "MultiStatusLayout onStatusChange",
+                    "${oldViewStatus},${oldView},${newViewStatus},${newView}"
+                )
             }
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.statusLayout.showViewByStatus(20)
     }
 }

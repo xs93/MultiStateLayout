@@ -59,13 +59,26 @@ class MultiStatusLayout @JvmOverloads constructor(
         mInflater = LayoutInflater.from(context)
 
         val ta = context.obtainStyledAttributes(attrs, R.styleable.MultiStatusLayout)
-        mContentLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_content_layout, INVALID_LAYOUT_ID)
+        mContentLayoutId =
+            ta.getResourceId(R.styleable.MultiStatusLayout_msl_content_layout, INVALID_LAYOUT_ID)
         mLoadingLayoutId =
-            ta.getResourceId(R.styleable.MultiStatusLayout_msl_loading_layout, R.layout.msl_layout_loading)
-        mEmptyLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_empty_layout, R.layout.msl_layout_empty)
-        mErrorLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_error_layout, R.layout.msl_layout_error)
+            ta.getResourceId(
+                R.styleable.MultiStatusLayout_msl_loading_layout,
+                R.layout.msl_layout_loading
+            )
+        mEmptyLayoutId = ta.getResourceId(
+            R.styleable.MultiStatusLayout_msl_empty_layout,
+            R.layout.msl_layout_empty
+        )
+        mErrorLayoutId = ta.getResourceId(
+            R.styleable.MultiStatusLayout_msl_error_layout,
+            R.layout.msl_layout_error
+        )
         mNoNetworkLayoutId =
-            ta.getResourceId(R.styleable.MultiStatusLayout_msl_no_network_layout, R.layout.msl_layout_no_network)
+            ta.getResourceId(
+                R.styleable.MultiStatusLayout_msl_no_network_layout,
+                R.layout.msl_layout_no_network
+            )
         mDefaultStatus = ta.getInt(R.styleable.MultiStatusLayout_msl_default_state, STATE_CONTENT)
         ta.recycle()
     }
@@ -93,10 +106,6 @@ class MultiStatusLayout @JvmOverloads constructor(
                 mViews.put(STATE_CONTENT, contentView)
             }
         }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
         showViewByStatus(mDefaultStatus)
     }
 
