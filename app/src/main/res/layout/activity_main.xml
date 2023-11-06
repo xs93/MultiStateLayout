@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -14,18 +13,7 @@
         <com.github.xs93.statuslayout.MultiStatusLayout
             android:id="@+id/status_layout"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            app:msl_content_layout="@layout/layout_content"
-            app:msl_default_state="Loading">
-
-            <TextView
-                android:id="@+id/tv_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Context" />
-        </com.github.xs93.statuslayout.MultiStatusLayout>
-
+            android:layout_height="400dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_context"

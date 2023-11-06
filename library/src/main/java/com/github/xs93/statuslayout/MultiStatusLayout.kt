@@ -59,27 +59,14 @@ class MultiStatusLayout @JvmOverloads constructor(
         mInflater = LayoutInflater.from(context)
 
         val ta = context.obtainStyledAttributes(attrs, R.styleable.MultiStatusLayout)
-        mContentLayoutId =
-            ta.getResourceId(R.styleable.MultiStatusLayout_msl_content_layout, INVALID_LAYOUT_ID)
+        mContentLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_content_layout, INVALID_LAYOUT_ID)
         mLoadingLayoutId =
-            ta.getResourceId(
-                R.styleable.MultiStatusLayout_msl_loading_layout,
-                R.layout.msl_layout_loading
-            )
-        mEmptyLayoutId = ta.getResourceId(
-            R.styleable.MultiStatusLayout_msl_empty_layout,
-            R.layout.msl_layout_empty
-        )
-        mErrorLayoutId = ta.getResourceId(
-            R.styleable.MultiStatusLayout_msl_error_layout,
-            R.layout.msl_layout_error
-        )
+            ta.getResourceId(R.styleable.MultiStatusLayout_msl_loading_layout, R.layout.msl_layout_loading)
+        mEmptyLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_empty_layout, R.layout.msl_layout_empty)
+        mErrorLayoutId = ta.getResourceId(R.styleable.MultiStatusLayout_msl_error_layout, R.layout.msl_layout_error)
         mNoNetworkLayoutId =
-            ta.getResourceId(
-                R.styleable.MultiStatusLayout_msl_no_network_layout,
-                R.layout.msl_layout_no_network
-            )
-        mDefaultStatus = ta.getInt(R.styleable.MultiStatusLayout_msl_default_state, STATE_CONTENT)
+            ta.getResourceId(R.styleable.MultiStatusLayout_msl_no_network_layout, R.layout.msl_layout_no_network)
+        mDefaultStatus = ta.getInt(R.styleable.MultiStatusLayout_msl_default_state, INVALID_LAYOUT_ID)
         ta.recycle()
     }
 
@@ -90,9 +77,8 @@ class MultiStatusLayout @JvmOverloads constructor(
             var contentView = mViews[STATE_CONTENT]
             if (contentView == null) {
                 if (mContentLayoutId != INVALID_LAYOUT_ID) {
-                    val inflateView = mInflater.inflate(mContentLayoutId, this, false).also {
-                        mViews[STATE_CONTENT] = it
-                    }
+                    val inflateView = mInflater.inflate(mContentLayoutId, this, false)
+                        .also { mViews[STATE_CONTENT] = it }
                     contentView = inflateView
                     addView(contentView, mLayoutParams)
                 }
@@ -106,7 +92,9 @@ class MultiStatusLayout @JvmOverloads constructor(
                 mViews.put(STATE_CONTENT, contentView)
             }
         }
-        showViewByStatus(mDefaultStatus)
+        if (mShowStatus == INVALID_LAYOUT_ID && mDefaultStatus != INVALID_LAYOUT_ID) {
+            showViewByStatus(mDefaultStatus)
+        }
     }
 
     fun showContent() {
@@ -310,7 +298,15 @@ class MultiStatusLayout @JvmOverloads constructor(
     }
 
     fun setViewByStatus(status: Int, view: View) {
+        val oldView = mViews[status]
         mViews.put(status, view)
+        if (status == STATE_CONTENT) {
+            if (oldView != null) {
+                removeView(oldView)
+            }
+            addView(view)
+            view.visibility = View.GONE
+        }
         if (mShowStatus == status) {
             removeOldViews()
             showViewByStatus(status)
@@ -321,6 +317,9 @@ class MultiStatusLayout @JvmOverloads constructor(
         return mShowStatus
     }
 
+    fun getViewByStatus(state: Int): View? {
+        return mViews[state]
+    }
 
     fun setViewClick(layoutStatus: Int, @IdRes viewId: Int, listener: OnClickListener?) {
         var bindViewClicks = mChildViewClickListener[layoutStatus]

@@ -54,6 +54,11 @@ class MainActivity : AppCompatActivity() {
             binding.statusLayout.showLoading()
         }
 
+
+
+        val content = layoutInflater.inflate(R.layout.layout_content, binding.statusLayout, false)
+        binding.statusLayout.setViewByStatus(MultiStatusLayout.STATE_CONTENT, content)
+
         val other = layoutInflater.inflate(R.layout.msl_other, null, false)
         binding.statusLayout.setViewByStatus(20, other)
 
@@ -71,10 +76,11 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         })
+
+        binding.statusLayout.showContent()
     }
 
     override fun onStart() {
         super.onStart()
-        binding.statusLayout.showViewByStatus(20)
     }
 }
