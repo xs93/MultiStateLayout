@@ -1,18 +1,17 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id(libs.plugins.kotlin.kapt.get().pluginId)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
     namespace = "com.github.xs93.statusview.app"
-    compileSdk = 33
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.github.xs93.statusview.app"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -25,7 +24,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -59,5 +61,5 @@ dependencies {
     api(libs.androidx.activity.ktx)
     api(libs.androidx.fragment.ktx)
 //    implementation(libs.multiStateLayout)
-        implementation(project(mapOf("path" to ":library")))
+    implementation(project(mapOf("path" to ":library")))
 }

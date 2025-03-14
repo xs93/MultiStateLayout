@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -7,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.github.xs93.statuslayout"
-    compileSdk = 33
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
